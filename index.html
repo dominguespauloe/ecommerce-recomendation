@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Recomendações Avançado</title>
+    <script src="https://jsdelivr.net"></script>
+    <script src="/tfjs-vis/tfjs-vis.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f7f6; color: #333; display: flex; gap: 20px; }
+        .main-panel { flex: 2; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .vis-panel { flex: 1; background: #2d3748; color: white; padding: 20px; border-radius: 8px; min-height: 600px; }
+        .control-panel { display: flex; flex-direction: column; gap: 15px; background: #e2e8f0; padding: 20px; border-radius: 6px; margin-bottom: 25px; }
+        .row-controls { display: flex; gap: 15px; align-items: flex-end; width: 100%; }
+        .control-group { flex: 1; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #4a5568; }
+        select, button { width: 100%; padding: 12px; font-size: 15px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { color: white; border: none; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-buy { background-color: #28a745; } .btn-buy:hover { background-color: #218838; }
+        .btn-train { background-color: #007bff; } .btn-train:hover { background-color: #0056b3; }
+        .btn-save { background-color: #ed8936; } .btn-save:hover { background-color: #dd6b20; }
+        .btn-db { background-color: #4c51bf; } .btn-db:hover { background-color: #434190; }
+        button:disabled { background-color: #a0aec0 !important; cursor: not-allowed; }
+        h2 { border-bottom: 2px solid #ddd; padding-bottom: 8px; color: #4a5568; margin-top: 30px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .card { background: #f9f9f9; padding: 15px; border-radius: 6px; border-left: 5px solid #ccc; margin-bottom: 12px; color: #333; }
+        .purchase-card { border-left-color: #28a745; } .recom-card { border-left-color: #007bff; }
+        .neural-card { border-left-color: #9f7aea; background: #faf5ff; }
+        .badge { display: inline-block; background: #edf2f7; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px; }
+        .status-train { font-weight: bold; color: #48bb78; }
+    </style>
+</head>
+<body>
+    <div class="main-panel">
+        <h1>Painel de Recomendações Avançado</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #edf2f7; padding: 10px; border-radius: 4px;">
+            <div>Status: <span id="trainStatus" class="status-train">Iniciando...</span></div>
+            <div id="timeLabel" style="font-weight: bold; color: #4a5568;">Tempo de Treino: N/A</div>
+            <div id="accuracyLabel" style="font-weight: bold; color: #4a5568;">Acurácia: N/A</div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="row-controls">
+                <div class="control-group">
+                    <label for="userSelect">1. Selecione o Cliente:</label>
+                    <select id="userSelect"><option value="">-- Escolha um cliente --</option></select>
+                </div>
+                <div class="control-group">
+                    <label for="productSelect">2. Simular Compra:</label>
+                    <select id="productSelect" disabled><option value="">-- Escolha um produto --</option></select>
+                </div>
+                <div class="control-group" style="flex: 0.4;">
+                    <button id="buyBtn" class="btn-buy" disabled>Comprar</button>
+                </div>
+            </div>
+            <div class="row-controls" style="border-top: 1px solid #cbd5e0; padding-top: 15px;">
+                <button id="dbBtn" class="btn-db" disabled>💾 Salvar Novos Vetores no ChromaDB</button>
+                <button id="trainBtn" class="btn-train">⚙️ Treinar Rede Neural</button>
+                <button id="saveBtn" class="btn-save" disabled>💾 Salvar Modelo Local (Disco)</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div>
+                <h2>Histórico do Cliente</h2>
+                <div id="purchasesList">Nenhum cliente selecionado.</div>
+            </div>
+            <div>
+                <h2>Sugestões da Rede Neural + ChromaDB</h2>
+                <div id="recommendationsList">Aguardando definição do vetor de perfil...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vis-panel" id="visContainer">
+        <h3 style="margin-top: 0; border-bottom: 1px solid #4a5568; padding-bottom: 10px;">Métricas em Tempo Real (TFJS-Vis)</h3>
+        <div id="perf-loss" style="width: 100%; height: 250px;"></div>
+        <div id="perf-acc" style="width: 100%; height: 250px; margin-top: 20px;"></div>
+    </div>
+
+    <!-- CARREGAMENTO DO JAVASCRIPT SEPARADO -->
+    <script type="module" src="/app.js"></script>
+</body>
+</html>
